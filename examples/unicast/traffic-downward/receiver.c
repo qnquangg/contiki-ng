@@ -35,14 +35,14 @@
 #include "sys/clock.h"
 
 #include "sys/log.h"
-#define LOG_MODULE "Sink/Receiver"
+#define LOG_MODULE "Unicast"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
 #define UDP_PORT 1903
 
 static struct simple_udp_connection udp_conn;
 
-PROCESS(sink_process, "Sink");
+PROCESS(sink_process, "Receiver / RPL Member");
 AUTOSTART_PROCESSES(&sink_process);
 /*---------------------------------------------------------------------------*/
 static void
@@ -58,7 +58,7 @@ udp_rx_callback(struct simple_udp_connection *c,
 
   LOG_INFO("Received from ");
   LOG_INFO_6ADDR(sender_addr);
-  LOG_INFO_(" : '%.*s' at time %lu\n", datalen, (char *)data, (unsigned long)receive_time);
+  LOG_INFO_(" : '%.*s', receive_time %lu\n", datalen, (char *)data, (unsigned long)receive_time);
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(sink_process, ev, data)
@@ -68,6 +68,11 @@ PROCESS_THREAD(sink_process, ev, data)
   /* Initialize UDP connection */
   simple_udp_register(&udp_conn, UDP_PORT, NULL,
                       UDP_PORT, udp_rx_callback);
+
+  while (1)
+  {
+    PROCESS_WAIT_EVENT();
+  }
 
   PROCESS_END();
 }

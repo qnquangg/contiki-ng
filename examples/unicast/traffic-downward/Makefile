@@ -2,5 +2,11 @@ CONTIKI_PROJECT = root sink
 all: $(CONTIKI_PROJECT)
 
 CONTIKI=../../..
+
+MAKE_MAC = MAKE_MAC_TSCH
 MAKE_ROUTING = MAKE_ROUTING_RPL_CLASSIC
+
+# ORCHESTRA_EXTRA_RULES = &unicast_per_neighbor_rpl_storing
+# CFLAGS += -DRPL_CONF_MOP=RPL_MOP_STORING_NO_MULTICAST
+
 include $(CONTIKI)/Makefile.include

@@ -8,22 +8,28 @@
 #include "net/ipv6/uiplib.h"
 #include "sys/clock.h"
 
+#if MAC_CONF_WITH_TSCH
+#include "net/mac/tsch/tsch.h"
+static linkaddr_t coordinator_addr = {{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}};
+#endif /* MAC_CONF_WITH_TSCH */
+
 #include "sys/log.h"
-#define LOG_MODULE "Root/Sender"
+#define LOG_MODULE "Unicast"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
 #define WITH_SERVER_REPLY 1
 #define UDP_PORT 1903
 
-#define SEND_INTERVAL (10 * CLOCK_SECOND)
+#define SEND_INTERVAL (2 * CLOCK_SECOND) // 2 seconds per iteration
+#define START_DELAY (60 * CLOCK_SECOND)  // Wait 60s for RPL construction
 
 static struct simple_udp_connection udp_conn;
-static uint32_t rx_count = 0;
+static uint32_t rx_count1 = 0;
 volatile uint8_t child_idx = 0;
 
 /*---------------------------------------------------------------------------*/
 // Define children address: fd00::2:1, fd00::2:2,...
-#define NUM_CHILDREN 3
+#define NUM_CHILDREN 20
 static uip_ipaddr_t child_ips[NUM_CHILDREN];
 
 static void
@@ -34,14 +40,7 @@ init_child_addresses(void)
   for (i = 0; i < NUM_CHILDREN; i++)
   {
     int base_id = i + 2; // Start from 2
-    if (base_id < 10)
-    {
-      sprintf(ip_str, "fd00::20%u:%u:%u:%u", base_id, base_id, base_id, base_id);
-    }
-    else
-    {
-      sprintf(ip_str, "fd00::2%u:%u:%u:%u", base_id, base_id, base_id, base_id);
-    }
+    sprintf(ip_str, "fd00::%x:%x:%x:%x", 0x200 + base_id, base_id, base_id, base_id);
 
     uiplib_ipaddrconv(ip_str, &child_ips[i]);
     LOG_INFO("Child %d IP: %s\n", i + 1, ip_str);
@@ -49,7 +48,7 @@ init_child_addresses(void)
 }
 
 /*---------------------------------------------------------------------------*/
-PROCESS(root_process, "Root");
+PROCESS(root_process, "Sender / RPL ROOT");
 AUTOSTART_PROCESSES(&root_process);
 /*---------------------------------------------------------------------------*/
 static void
@@ -68,30 +67,29 @@ udp_rx_callback(struct simple_udp_connection *c,
   LOG_INFO_(" LLSEC LV:%d", uipbuf_get_attr(UIPBUF_ATTR_LLSEC_LEVEL));
 #endif
   LOG_INFO_("\n");
-  rx_count++;
+  rx_count1++;
 }
 /*---------------------------------------------------------------------------*/
 void send_unicast_to_children()
 {
   static clock_time_t send_time;
-  static uint16_t msg_count = 0;
+  static uint16_t message_number = 1;
   char payload[50];
 
   send_time = clock_time();
-  sprintf(payload, "Msg %u, time %lu", msg_count, (unsigned long)send_time);
-  
+  sprintf(payload, "message_number %u, send_time %lu", message_number, (unsigned long)send_time);
+
   simple_udp_sendto(&udp_conn, payload, strlen(payload), &child_ips[child_idx]);
 
   LOG_INFO_("Sent to child: ");
   uiplib_ipaddr_print(&child_ips[child_idx]);
   LOG_INFO_("\n");
 
-  msg_count++;
-
   // Reset child index when reaching the end of the list.
   if (child_idx == NUM_CHILDREN - 1)
   {
     child_idx = 0;
+    message_number++;
   }
   else
   {
@@ -105,6 +103,10 @@ PROCESS_THREAD(root_process, ev, data)
 
   PROCESS_BEGIN();
 
+#if MAC_CONF_WITH_TSCH
+  tsch_set_coordinator(linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr));
+#endif /* MAC_CONF_WITH_TSCH */
+
   /* Initialize DAG root */
   NETSTACK_ROUTING.root_start();
 
@@ -114,7 +116,8 @@ PROCESS_THREAD(root_process, ev, data)
   /* Initialize UDP connection */
   simple_udp_register(&udp_conn, UDP_PORT, NULL, UDP_PORT, udp_rx_callback);
 
-  etimer_set(&periodic_timer, random_rand() % SEND_INTERVAL);
+  // etimer_set(&periodic_timer, random_rand() % SEND_INTERVAL);
+  etimer_set(&periodic_timer, START_DELAY);
   while (1)
   {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
@@ -122,8 +125,7 @@ PROCESS_THREAD(root_process, ev, data)
     /* Send to children */
     send_unicast_to_children();
 
-    /* Add some jitter */
-    etimer_set(&periodic_timer, SEND_INTERVAL - CLOCK_SECOND + (random_rand() % (2 * CLOCK_SECOND)));
+    etimer_set(&periodic_timer, SEND_INTERVAL);
   }
 
   PROCESS_END();
