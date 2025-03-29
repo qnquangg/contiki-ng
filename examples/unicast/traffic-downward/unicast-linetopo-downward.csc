@@ -290,7 +290,7 @@
       <formatted_time />
       <coloring />
     </plugin_config>
-    <bounds x="403" y="-4" height="621" width="1057" z="2" />
+    <bounds x="403" y="-4" height="621" width="1057" z="1" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.TimeLine
@@ -326,10 +326,34 @@
   <plugin>
     org.contikios.cooja.plugins.Notes
     <plugin_config>
-      <notes>TODO: Copy the log and use the python script for visualization.</notes>
+      <notes>Copy the log and use the python script for data analysis and visualization.
+
+$ python3 analyze-log.py network_test.log 
+ID, total_message_received, PRR, receive_time, send_time, Latency
+2, 100, 100.00%, 4022528, 4022464, 64.00 ms
+3, 100, 100.00%, 4024558, 4024465, 93.00 ms
+4, 99, 99.00%, 4026658, 4026466, 192.00 ms
+5, 97, 97.00%, 4028758, 4028467, 291.00 ms
+6, 97, 97.00%, 4030998, 4030468, 530.00 ms
+7, 96, 96.00%, 4032888, 4032469, 419.00 ms
+8, 96, 96.00%, 4035198, 4034470, 728.00 ms
+9, 95, 95.00%, 4037018, 4036471, 547.00 ms
+10, 92, 92.00%, 4039328, 4038472, 856.00 ms
+11, 89, 89.00%, 4041148, 4040473, 675.00 ms
+12, 89, 89.00%, 4043528, 4042477, 1051.00 ms
+13, 86, 86.00%, 4045278, 4044478, 800.00 ms
+14, 86, 86.00%, 4047588, 4046479, 1109.00 ms
+15, 83, 83.00%, 4049408, 4048480, 928.00 ms
+16, 83, 83.00%, 4051508, 4050481, 1027.00 ms
+17, 83, 83.00%, 4054028, 4052482, 1546.00 ms
+18, 81, 81.00%, 4055638, 4054483, 1155.00 ms
+19, 79, 79.00%, 4057738, 4056484, 1254.00 ms
+20, 79, 79.00%, 4060258, 4058485, 1773.00 ms
+21, 77, 77.00%, 4061868, 4060486, 1382.00 ms
+total_message_sent = 100</notes>
       <decorations>true</decorations>
     </plugin_config>
-    <bounds x="406" y="620" height="169" width="1451" z="1" />
+    <bounds x="406" y="620" height="169" width="1451" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.PowerTracker
@@ -341,6 +365,6 @@
       <split>150</split>
       <formatted_time />
     </plugin_config>
-    <bounds x="1" y="406" height="384" width="404" />
+    <bounds x="1" y="406" height="384" width="404" z="2" />
   </plugin>
 </simconf>

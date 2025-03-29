@@ -22,6 +22,7 @@ static linkaddr_t coordinator_addr = {{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
 #define SEND_INTERVAL (2 * CLOCK_SECOND) // 2 seconds per iteration
 #define START_DELAY (60 * CLOCK_SECOND)  // Wait 60s for RPL construction
+#define TOTAL_PACKET 150
 
 static struct simple_udp_connection udp_conn;
 static uint32_t rx_count1 = 0;
@@ -72,24 +73,28 @@ udp_rx_callback(struct simple_udp_connection *c,
 /*---------------------------------------------------------------------------*/
 void send_unicast_to_children()
 {
-  static clock_time_t send_time;
-  static uint16_t message_number = 1;
+  static uint16_t packet_number = 1;
   char payload[50];
 
-  send_time = clock_time();
-  sprintf(payload, "message_number %u, send_time %lu", message_number, (unsigned long)send_time);
+  if (packet_number > TOTAL_PACKET)
+  {
+    // No need to send anymore.
+    return;
+  }
+
+  sprintf(payload, "Send from Root (ID:1) with packet_number %u", packet_number);
 
   simple_udp_sendto(&udp_conn, payload, strlen(payload), &child_ips[child_idx]);
 
-  LOG_INFO_("Sent to child: ");
+  LOG_INFO_("Send to node ID:%d, address is ", child_idx+2);
   uiplib_ipaddr_print(&child_ips[child_idx]);
-  LOG_INFO_("\n");
+  LOG_INFO_(" and packet_number #%d\n", packet_number);
 
   // Reset child index when reaching the end of the list.
   if (child_idx == NUM_CHILDREN - 1)
   {
     child_idx = 0;
-    message_number++;
+    packet_number++;
   }
   else
   {

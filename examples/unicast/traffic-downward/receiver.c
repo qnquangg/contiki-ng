@@ -33,6 +33,7 @@
 #include "net/ipv6/simple-udp.h"
 #include "net/ipv6/uiplib.h"
 #include "sys/clock.h"
+#include <stdio.h>
 
 #include "sys/log.h"
 #define LOG_MODULE "Unicast"
@@ -41,6 +42,7 @@
 #define UDP_PORT 1903
 
 static struct simple_udp_connection udp_conn;
+static uint32_t total_receive = 0;
 
 PROCESS(sink_process, "Receiver / RPL Member");
 AUTOSTART_PROCESSES(&sink_process);
@@ -54,11 +56,12 @@ udp_rx_callback(struct simple_udp_connection *c,
                 const uint8_t *data,
                 uint16_t datalen)
 {
-  clock_time_t receive_time = clock_time();
+  // int result = sscanf((char *)data, "message_number %d, send_time %lu", &message_number, &send_time);
+  total_receive++;
 
-  LOG_INFO("Received from ");
-  LOG_INFO_6ADDR(sender_addr);
-  LOG_INFO_(" : '%.*s', receive_time %lu\n", datalen, (char *)data, (unsigned long)receive_time);
+  LOG_INFO_("Received from Root ");
+  // LOG_INFO_6ADDR(sender_addr);
+  LOG_INFO_("with message: '%.*s', total_received %d \n", datalen, (char *)data, total_receive);
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(sink_process, ev, data)
