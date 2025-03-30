@@ -53,7 +53,7 @@
 
 #define MAX_PAYLOAD_LEN 120
 #define MCAST_SINK_UDP_PORT 3001 /* Host byte order */
-#define SEND_INTERVAL CLOCK_SECOND /* clock ticks */
+#define SEND_INTERVAL 10*CLOCK_SECOND /* clock ticks */
 #define ITERATIONS 100 /* messages */
 
 /* Start sending messages START_DELAY secs after we start so that routing can
@@ -81,11 +81,12 @@ multicast_send(void)
   memset(buf, 0, MAX_PAYLOAD_LEN);
   memcpy(buf, &id, sizeof(seq_id));
 
-  PRINTF("Send to: ");
+  PRINTF("Send to multicast address: ");
   PRINT6ADDR(&mcast_conn->ripaddr);
-  PRINTF(" Remote Port %u,", uip_ntohs(mcast_conn->rport));
-  PRINTF(" (msg=0x%08"PRIx32")", uip_ntohl(*((uint32_t *)buf)));
-  PRINTF(" %lu bytes\n", (unsigned long)sizeof(id));
+  // PRINTF(" Remote Port %u,", uip_ntohs(mcast_conn->rport));
+  PRINTF(", data [0x%08"PRIx32"]", uip_ntohl(*((uint32_t *)buf)));
+  // PRINTF(" %lu bytes", (unsigned long)sizeof(buf));
+  PRINTF(", packet_number #%d \n", seq_id+1);
 
   seq_id++;
   uip_udp_packet_send(mcast_conn, buf, sizeof(id));
