@@ -39,9 +39,9 @@ def main(log_filepath):
     sender_pattern = re.compile(
         r"^(?P<time>\S+)\s+ID:1\s+Send to multicast address:\s+\S+,\s+data\s+\[(?P<data>0x[0-9a-fA-F]+)\],\s+packet_number\s+#(?P<packet_number>\d+)"
     )
-    # Receiver log sample: "12:01.535    ID:11    In: [0x0000003f], TTL 255, total 20"
+    # Receiver log sample: "12:01.535    ID:11    In: [0x0000003f], TTL 255, total_received 20"
     receiver_pattern = re.compile(
-        r"^(?P<time>\S+)\s+ID:(?P<receiver_id>\d+)\s+In:\s+\[(?P<data>0x[0-9a-fA-F]+)\],\s+TTL\s+\d+,\s+total\s+(?P<total_received>\d+)"
+        r"^(?P<time>\S+)\s+ID:(?P<receiver_id>\d+)\s+In:\s+\[(?P<data>0x[0-9a-fA-F]+)\],\s+TTL\s+\d+,\s+total_received\s+(?P<total_received>\d+)"
     )
     
     # Dictionaries for storing logs.
