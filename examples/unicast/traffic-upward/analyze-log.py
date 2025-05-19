@@ -36,7 +36,7 @@ def main(log_filepath):
     # Matches lines like:
     # "04:39.767  ID:21 Send to node ID:17, address is fd00::211:11:11:11 and packet_number #55"
     sender_pattern = re.compile(
-        r"^(?P<time>\S+)\s+ID:21\s+Send to node ID:(?P<receiver_id>\d+),\s+address is\s+(?P<ipv6_address>\S+)\s+and packet_number #(?P<packet_number>\d+)"
+        r"^(?P<time>\S+)\s+ID:22\s+Send to node ID:(?P<receiver_id>\d+),\s+address is\s+(?P<ipv6_address>\S+)\s+and packet_number #(?P<packet_number>\d+)"
 
     )
     

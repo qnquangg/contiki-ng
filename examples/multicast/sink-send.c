@@ -31,9 +31,10 @@
 
 /**
  * \file
- *         This node is part of the RPL multicast example. It is an RPL root
- *         and sends a multicast message periodically. For the example to work,
- *         we need one of those nodes.
+ *         This node is part of the RPL multicast example. It is a node that
+ *         joins a multicast group and listens for messages. It also knows how
+ *         to forward messages down the tree.
+ *         For the example to work, we need one or more of those nodes.
  *
  * \author
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
@@ -45,32 +46,31 @@
 #include "net/ipv6/multicast/uip-mcast6.h"
 
 #include <string.h>
-#include <inttypes.h>
 
 #define DEBUG DEBUG_PRINT
 #include "net/ipv6/uip-debug.h"
-#include "net/routing/routing.h"
 
+#define MCAST_SINK_UDP_PORT 3001 /* Host byte order */
 #define MAX_PAYLOAD_LEN 120
 #define MCAST_SINK_UDP_PORT 3001 /* Host byte order */
 #define SEND_INTERVAL 5*CLOCK_SECOND /* clock ticks */
 #define ITERATIONS 500 /* messages */
 
-/* Start sending messages START_DELAY secs after we start so that routing can
- * converge */
 #define START_DELAY 60
 
-static struct uip_udp_conn * mcast_conn;
 static char buf[MAX_PAYLOAD_LEN];
 static uint32_t seq_id;
+
+static struct uip_udp_conn *sink_conn;
+static uint16_t count;
 
 #if !NETSTACK_CONF_WITH_IPV6 || !UIP_CONF_ROUTER || !UIP_IPV6_MULTICAST || !UIP_CONF_IPV6_RPL
 #error "This example can not work with the current contiki configuration"
 #error "Check the values of: NETSTACK_CONF_WITH_IPV6, UIP_CONF_ROUTER, UIP_CONF_IPV6_RPL"
 #endif
 /*---------------------------------------------------------------------------*/
-PROCESS(rpl_root_process, "RPL ROOT, Multicast Sender");
-AUTOSTART_PROCESSES(&rpl_root_process);
+PROCESS(mcast_sink_process, "Multicast Sink");
+AUTOSTART_PROCESSES(&mcast_sink_process);
 /*---------------------------------------------------------------------------*/
 static void
 multicast_send(void)
@@ -82,48 +82,105 @@ multicast_send(void)
   memcpy(buf, &id, sizeof(seq_id));
 
   PRINTF("Send to multicast address: ");
-  PRINT6ADDR(&mcast_conn->ripaddr);
+  PRINT6ADDR(&sink_conn->ripaddr);
   // PRINTF(" Remote Port %u,", uip_ntohs(mcast_conn->rport));
   PRINTF(", data [0x%08"PRIx32"]", uip_ntohl(*((uint32_t *)buf)));
   // PRINTF(" %lu bytes", (unsigned long)sizeof(buf));
   PRINTF(", packet_number #%d \n", seq_id+1);
 
   seq_id++;
-  uip_udp_packet_send(mcast_conn, buf, sizeof(id));
+  uip_udp_packet_send(sink_conn, buf, sizeof(id));
 }
-/*---------------------------------------------------------------------------*/
-static void
-prepare_mcast(void)
-{
-  uip_ipaddr_t ipaddr;
 
-#if UIP_MCAST6_CONF_ENGINE == UIP_MCAST6_ENGINE_MPL
-/*
- * MPL defines a well-known MPL domain, MPL_ALL_FORWARDERS, which
- *  MPL nodes are automatically members of. Send to that domain.
- */
-  uip_ip6addr(&ipaddr, 0xFF03,0,0,0,0,0,0,0xFC);
-#else
+
+// static void
+// tcpip_handler(void)
+// {
+//   if(uip_newdata()) {
+//     count++;
+//     PRINTF("In: [0x%08lx], TTL %u, total_received %u\n",
+//         (unsigned long)uip_ntohl((unsigned long) *((uint32_t *)(uip_appdata))),
+//         UIP_IP_BUF->ttl, count);
+//   }
+//   return;
+// }
+/*---------------------------------------------------------------------------*/
+#if UIP_MCAST6_CONF_ENGINE != UIP_MCAST6_ENGINE_MPL
+static uip_ds6_maddr_t *
+join_mcast_group(void)
+{
+  uip_ipaddr_t addr;
+  uip_ds6_maddr_t *rv;
+  const uip_ipaddr_t *default_prefix = uip_ds6_default_prefix();
+
+  /* First, set our v6 global */
+  uip_ip6addr_copy(&addr, default_prefix);
+  uip_ds6_set_addr_iid(&addr, &uip_lladdr);
+  uip_ds6_addr_add(&addr, 0, ADDR_AUTOCONF);
+
   /*
    * IPHC will use stateless multicast compression for this destination
    * (M=1, DAC=0), with 32 inline bits (1E 89 AB CD)
    */
-  uip_ip6addr(&ipaddr, 0xFF1E,0,0,0,0,0,0x89,0xABCD);
-#endif
-  mcast_conn = udp_new(&ipaddr, UIP_HTONS(MCAST_SINK_UDP_PORT), NULL);
-}
-/*---------------------------------------------------------------------------*/
-PROCESS_THREAD(rpl_root_process, ev, data)
-{
-  static struct etimer et;
+  uip_ip6addr(&addr, 0xFF1E,0,0,0,0,0,0x89,0xABCD);
+  rv = uip_ds6_maddr_add(&addr);
 
+  if(rv) {
+    PRINTF("Joined multicast group ");
+    PRINT6ADDR(&uip_ds6_maddr_lookup(&addr)->ipaddr);
+    PRINTF("\n");
+  }
+  return rv;
+}
+#endif
+/*---------------------------------------------------------------------------*/
+PROCESS_THREAD(mcast_sink_process, ev, data)
+{
   PROCESS_BEGIN();
 
   PRINTF("Multicast Engine: '%s'\n", UIP_MCAST6.name);
+  static struct etimer et;
 
-  NETSTACK_ROUTING.root_start();
+  /*
+   * MPL nodes are automatically configured to subscribe to the ALL_MPL_FORWARDERS
+   *  well-known address, so this isn't needed.
+   */
+#if UIP_MCAST6_CONF_ENGINE != UIP_MCAST6_ENGINE_MPL
+  if(join_mcast_group() == NULL) {
+    PRINTF("Failed to join multicast group\n");
+    PROCESS_EXIT();
+  }
+#endif
 
-  prepare_mcast();
+  count = 0;
+
+  uip_ipaddr_t ipaddr;
+  
+  #if UIP_MCAST6_CONF_ENGINE == UIP_MCAST6_ENGINE_MPL
+  /*
+   * MPL defines a well-known MPL domain, MPL_ALL_FORWARDERS, which
+   *  MPL nodes are automatically members of. Send to that domain.
+   */
+    uip_ip6addr(&ipaddr, 0xFF03,0,0,0,0,0,0,0xFC);
+  #else
+    /*
+     * IPHC will use stateless multicast compression for this destination
+     * (M=1, DAC=0), with 32 inline bits (1E 89 AB CD)
+     */
+    uip_ip6addr(&ipaddr, 0xFF1E,0,0,0,0,0,0x89,0xABCD);
+  #endif
+
+  sink_conn = udp_new(&ipaddr, UIP_HTONS(MCAST_SINK_UDP_PORT), NULL);
+  if(sink_conn == NULL) {
+    PRINTF("No UDP connection available, exiting the process!\n");
+    PROCESS_EXIT();
+  }
+  // udp_bind(sink_conn, UIP_HTONS(MCAST_SINK_UDP_PORT));
+  PRINTF("Listening: ");
+  PRINT6ADDR(&sink_conn->ripaddr);
+  PRINTF(" local/remote port %u/%u\n",
+        UIP_HTONS(sink_conn->lport), UIP_HTONS(sink_conn->rport));
+
 
   etimer_set(&et, START_DELAY * CLOCK_SECOND);
   while(1) {

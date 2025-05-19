@@ -20,7 +20,7 @@ static linkaddr_t coordinator_addr = {{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 #define WITH_SERVER_REPLY 1
 #define UDP_PORT 1903
 
-#define SEND_INTERVAL (2 * CLOCK_SECOND) // 2 seconds per iteration
+#define SEND_INTERVAL (5 * CLOCK_SECOND) // 2 seconds per iteration
 #define START_DELAY (60 * CLOCK_SECOND)  // Wait 60s for RPL construction
 #define TOTAL_PACKET 150
 

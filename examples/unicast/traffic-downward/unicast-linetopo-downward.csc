@@ -279,9 +279,9 @@
       <skin>org.contikios.cooja.plugins.skins.UDGMVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.AttributeVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.MoteTypeVisualizerSkin</skin>
-      <viewport>0.742460737616145 0.0 0.0 0.742460737616145 98.05911475345474 69.12987125407028</viewport>
+      <viewport>0.6187172813467875 0.0 0.0 0.6187172813467875 166.32704007232346 103.63600382283637</viewport>
     </plugin_config>
-    <bounds x="1" y="1" height="400" width="400" z="4" />
+    <bounds x="1" y="1" height="400" width="400" z="3" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.LogListener
@@ -290,7 +290,7 @@
       <formatted_time />
       <coloring />
     </plugin_config>
-    <bounds x="403" y="-4" height="621" width="1057" z="1" />
+    <bounds x="403" y="-4" height="621" width="1057" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.TimeLine
@@ -318,10 +318,11 @@
       <mote>20</mote>
       <showRadioRXTX />
       <showRadioHW />
-      <showLEDs />
+      <showLogOutput />
+      <executionDetails />
       <zoomfactor>500.0</zoomfactor>
     </plugin_config>
-    <bounds x="0" y="791" height="166" width="1854" z="5" />
+    <bounds x="0" y="618" height="339" width="1854" z="2" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.Notes
@@ -353,18 +354,19 @@ ID, total_message_received, PRR, receive_time, send_time, Latency
 total_message_sent = 100</notes>
       <decorations>true</decorations>
     </plugin_config>
-    <bounds x="406" y="620" height="169" width="1451" />
+    <bounds x="406" y="620" height="169" width="1451" z="4" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.PowerTracker
-    <bounds x="1455" y="-2" height="628" width="400" z="3" />
+    <bounds x="1455" y="-2" height="628" width="400" z="5" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.RadioLogger
     <plugin_config>
-      <split>150</split>
+      <split>116</split>
       <formatted_time />
+      <analyzers name="6lowpan-pcap" />
     </plugin_config>
-    <bounds x="1" y="406" height="384" width="404" z="2" />
+    <bounds x="1" y="406" height="209" width="404" z="1" />
   </plugin>
 </simconf>

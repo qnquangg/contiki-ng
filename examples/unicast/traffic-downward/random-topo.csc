@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <simconf version="2023090101">
   <simulation>
-    <title>multicast-line-topo</title>
+    <title>unicast-random-topo</title>
     <randomseed>123456</randomseed>
     <motedelay_us>1000000</motedelay_us>
     <radiomedium>
@@ -16,9 +16,9 @@
     </events>
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
-      <description>Root</description>
-      <source>[CONFIG_DIR]/root.c</source>
-      <commands>$(MAKE) -j$(CPUS) root.cooja TARGET=cooja</commands>
+      <description>Sender</description>
+      <source>[CONFIG_DIR]/sender.c</source>
+      <commands>$(MAKE) -j$(CPUS) sender.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
       <moteinterface>org.contikios.cooja.contikimote.interfaces.ContikiVib</moteinterface>
@@ -48,9 +48,9 @@
     </motetype>
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
-      <description>Sink</description>
-      <source>[CONFIG_DIR]/sink.c</source>
-      <commands>$(MAKE) -j$(CPUS) sink.cooja TARGET=cooja</commands>
+      <description>Receiver</description>
+      <source>[CONFIG_DIR]/receiver.c</source>
+      <commands>$(MAKE) -j$(CPUS) receiver.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
       <moteinterface>org.contikios.cooja.contikimote.interfaces.ContikiVib</moteinterface>
@@ -260,7 +260,7 @@
       <mote>
         <interface_config>
           org.contikios.cooja.interfaces.Position
-          <pos x="4.411212268675499" y="103.70957542909272" />
+          <pos x="128.37293959136446" y="49.59929762950626" />
         </interface_config>
         <interface_config>
           org.contikios.cooja.contikimote.interfaces.ContikiMoteID
@@ -271,8 +271,8 @@
     <motetype>
       org.contikios.cooja.contikimote.ContikiMoteType
       <description>Sink Sender</description>
-      <source>[CONFIG_DIR]/sink-send.c</source>
-      <commands>$(MAKE) -j$(CPUS) sink-send.cooja TARGET=cooja</commands>
+      <source>[CONFIG_DIR]/sender.c</source>
+      <commands>$(MAKE) -j$(CPUS) sender.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
       <moteinterface>org.contikios.cooja.contikimote.interfaces.ContikiVib</moteinterface>
@@ -289,16 +289,6 @@
       <moteinterface>org.contikios.cooja.contikimote.interfaces.ContikiEEPROM</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Mote2MoteRelations</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.MoteAttributes</moteinterface>
-      <mote>
-        <interface_config>
-          org.contikios.cooja.interfaces.Position
-          <pos x="134.49499251117155" y="46.55874547639257" />
-        </interface_config>
-        <interface_config>
-          org.contikios.cooja.contikimote.interfaces.ContikiMoteID
-          <id>22</id>
-        </interface_config>
-      </mote>
     </motetype>
   </simulation>
   <plugin>
@@ -310,9 +300,9 @@
       <skin>org.contikios.cooja.plugins.skins.TrafficVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.UDGMVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.MoteTypeVisualizerSkin</skin>
-      <viewport>1.4636775714466077 0.0 0.0 1.4636775714466077 148.11639342925253 302.56771140927765</viewport>
+      <viewport>1.4636775714466077 0.0 0.0 1.4636775714466077 121.15106009591926 300.9610447426108</viewport>
     </plugin_config>
-    <bounds x="1" y="1" height="466" width="472" />
+    <bounds x="1" y="1" height="466" width="472" z="1" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.LogListener
@@ -321,7 +311,7 @@
       <formatted_time />
       <coloring />
     </plugin_config>
-    <bounds x="400" y="160" height="496" width="1454" z="1" />
+    <bounds x="400" y="160" height="496" width="1454" z="2" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.TimeLine
@@ -347,13 +337,12 @@
       <mote>18</mote>
       <mote>19</mote>
       <mote>20</mote>
-      <mote>21</mote>
       <showRadioRXTX />
       <showRadioHW />
       <showLEDs />
       <zoomfactor>500.0</zoomfactor>
     </plugin_config>
-    <bounds x="0" y="823" height="166" width="1854" z="3" />
+    <bounds x="0" y="823" height="166" width="1854" z="4" />
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.Notes
@@ -361,6 +350,10 @@
       <notes>Enter notes here</notes>
       <decorations>true</decorations>
     </plugin_config>
-    <bounds x="400" y="0" height="160" width="1454" z="2" />
+    <bounds x="400" y="0" height="160" width="1454" z="3" />
+  </plugin>
+  <plugin>
+    org.contikios.cooja.plugins.PowerTracker
+    <bounds x="23" y="511" height="400" width="400" />
   </plugin>
 </simconf>
