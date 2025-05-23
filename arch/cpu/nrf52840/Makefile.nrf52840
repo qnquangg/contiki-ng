@@ -48,7 +48,7 @@ CONTIKI_CPU_DIRS += . dev rf usb
 
 ### CPU-dependent source files
 CONTIKI_CPU_SOURCEFILES += clock.c rtimer-arch.c uart0.c dbg.c watchdog.c
-CONTIKI_CPU_SOURCEFILES += int-master.c slip-arch.c gpio-hal-arch.c
+CONTIKI_CPU_SOURCEFILES += int-master.c slip-arch.c gpio-hal-arch.c bh1750-arch.c
 CONTIKI_CPU_SOURCEFILES += nrf52840-ieee.c
 
 CONTIKI_SOURCEFILES += $(CONTIKI_CPU_SOURCEFILES)
@@ -86,10 +86,13 @@ NRF52_SDK_C_SRCS += components/boards/boards.c \
   modules/nrfx/drivers/src/nrfx_rng.c \
   modules/nrfx/drivers/src/nrfx_wdt.c \
   modules/nrfx/drivers/src/nrfx_power.c \
+  modules/nrfx/drivers/src/nrfx_twi.c \
+  modules/nrfx/drivers/src/nrfx_twim.c \
   modules/nrfx/mdk/system_nrf52840.c \
   integration/nrfx/legacy/nrf_drv_clock.c \
   integration/nrfx/legacy/nrf_drv_rng.c \
   integration/nrfx/legacy/nrf_drv_power.c \
+  integration/nrfx/legacy/nrf_drv_twi.c \
   components/libraries/fifo/app_fifo.c \
 
 NRF52_SDK_ASM_SRCS = modules/nrfx/mdk/gcc_startup_nrf52840.S

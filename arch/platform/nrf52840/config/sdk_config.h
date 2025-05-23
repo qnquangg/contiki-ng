@@ -4297,6 +4297,18 @@
 #define POWER_CONFIG_DEFAULT_DCDCENHV 0
 #endif
 
+#ifndef TWI_ENABLED
+#define TWI_ENABLED 1
+#endif
+
+#ifndef TWI0_ENABLED
+#define TWI0_ENABLED 1
+#endif
+
+#ifndef TWO0_USE_EASY_DMA
+#define TWI0_USE_EASY_DMA 1
+#endif
+
 // </e>
 
 // <<< end of configuration section >>>

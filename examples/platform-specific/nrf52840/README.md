@@ -1,0 +1,1 @@
+$ make TARGET=nrf BOARD=nrf52840/dk
