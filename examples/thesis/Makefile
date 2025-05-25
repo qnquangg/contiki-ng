@@ -1,0 +1,16 @@
+CONTIKI_PROJECT = test-light-and-led
+
+all: $(CONTIKI_PROJECT)
+
+CONTIKI = ../..
+
+PLATFORMS_ONLY = nrf52840
+
+ifeq ($(CONTIKI_NG_DRIVERS_SENSOR_DIR),)
+  CONTIKI_NG_DRIVERS_SENSOR_DIR = $(CONTIKI)/arch/dev/sensor
+endif
+MODULES += $(CONTIKI_NG_DRIVERS_SENSOR_DIR)/bh1750
+
+MODULES_REL += $(TARGET)
+
+include $(CONTIKI)/Makefile.include
