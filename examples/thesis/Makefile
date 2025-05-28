@@ -1,7 +1,8 @@
 # CONTIKI_PROJECT = test-light-and-led
 # CONTIKI_PROJECT = test-border-router-tunslip-mqtt-client
-# CONTIKI_PROJECT = test-multicast-nrf52840-sender-root test-multicast-nrf52840-receiver-sink
-CONTIKI_PROJECT = test-nrf52840-led-button
+CONTIKI_PROJECT = test-nrf52840-multicast-sender-root test-nrf52840-multicast-receiver-sink
+# CONTIKI_PROJECT = test-nrf52840-led-button
+
 
 all: $(CONTIKI_PROJECT)
 
