@@ -4,6 +4,27 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// Select TWIM instance (0 or 1 for nRF52840)
+#define NRF_TWI_INSTANCE_ID 0 // For BH1750-ARCH
+
+/*
+ * I2C Pin Configuration (SCL, SDA) - BASED ON YOUR SCHEMATIC
+ * P1.08 -> SCL => (1 * 32) + 8 = 40
+ * P1.09 -> SDA => (1 * 32) + 9 = 41
+ */
+#ifndef NRF_TWI_SCL_PIN
+#define NRF_TWI_SCL_PIN 40 // P1.08
+#endif
+
+#ifndef NRF_TWI_SDA_PIN
+#define NRF_TWI_SDA_PIN 41 // P1.09
+#endif
+
+// I2C Frequency
+#ifndef NRF_TWI_FREQUENCY
+#define NRF_TWI_FREQUENCY NRF_TWIM_FREQ_100K
+#endif 
+
 /**
  * @brief Initialize the I2C peripheral used for the BH1750 sensor.
  *
