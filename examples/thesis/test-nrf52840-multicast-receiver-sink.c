@@ -14,6 +14,7 @@
 #include "net/routing/routing.h"    // For RPL routing information
 #include "net/ipv6/uip.h"           // For uip_ipaddr_copy
 #include "net/ipv6/uipopt.h"        // For UIP_TTL (often 64)
+#include "dev/leds.h"
 
 #define MCAST_SINK_UDP_PORT 3001 /* Host byte order */
 #define UNICAST_ROOT_UDP_PORT 3002 /* Port for unicast to root, host byte order */
@@ -40,6 +41,7 @@ tcpip_handler(void)
     PRINTF("Received MCAST: Data [0x%08lx], TTL %u, Total RX %u\n",
            (unsigned long)uip_ntohl((unsigned long) *((uint32_t *)(uip_appdata))),
            last_received_ttl, count);
+    leds_single_toggle(LEDS_LED3);
   }
   return;
 }
