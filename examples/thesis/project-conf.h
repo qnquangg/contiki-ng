@@ -2,9 +2,9 @@
 #define PROJECT_CONF_H_
 
 // Define test here
-// #define TEST_NRF52840_MULTICAST_ENABLED
-// #define TEST_NRF52840_LIGHT_SENSOR_LED_BUTTON_ENABLED
-#define MQTT_ENABLED
+#define TEST_NRF52840_MULTICAST_ENABLED
+#define TEST_NRF52840_LIGHT_SENSOR_LED_BUTTON_ENABLED
+// #define MQTT_ENABLED
 
 /*
 * =======================================================================================
