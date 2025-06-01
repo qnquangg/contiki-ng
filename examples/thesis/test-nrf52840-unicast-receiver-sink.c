@@ -46,7 +46,7 @@ udp_rx_callback_child(struct simple_udp_connection *c,
     last_calculated_hops = 255; // Indicate an unusual TTL or error
     LOG_WARN("CHILD RX: Unusual TTL %u received.\n", received_ttl);
   }
-  leds_toggle(LEDS_LED1); // Toggle LED1 for each packet received from root
+  leds_single_toggle(LEDS_LED3); // Toggle LED3 for each packet received from root
 
   LOG_INFO("CHILD RX %lu: From ", received_from_root_count);
   LOG_INFO_6ADDR(sender_addr);
@@ -70,9 +70,9 @@ send_status_to_root(void)
     LOG_INFO_(" : '%s'\n", payload);
 
     simple_udp_sendto(&unicast_conn, payload, strlen(payload), &root_ipaddr);
-    leds_on(LEDS_LED2); // Turn on LED2 briefly to indicate sending status
+    leds_single_on(LEDS_LED2); // Turn on LED2 briefly to indicate sending status
     clock_delay_usec(10000); // Brief delay for visual effect
-    leds_off(LEDS_LED2);
+    leds_single_off(LEDS_LED2);
 
   } else {
     LOG_WARN("CHILD TX: Root not reachable or not in a DAG. Cannot send status.\n");

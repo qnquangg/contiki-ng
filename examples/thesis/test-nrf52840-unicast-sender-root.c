@@ -84,7 +84,7 @@ udp_rx_callback_root(struct simple_udp_connection *c,
   LOG_INFO("ROOT RX %lu: From ", root_rx_count);
   LOG_INFO_6ADDR(sender_addr);
   LOG_INFO_(" Port %u: '%.*s'\n", sender_port, datalen, (char *)data);
-  leds_toggle(LEDS_LED3); // Indicate unicast reception at root
+  leds_single_toggle(LEDS_LED3); // Indicate unicast reception at root
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -148,7 +148,7 @@ PROCESS_THREAD(root_prr_process, ev, data)
           current_packet_num_overall = 1;
           current_child_idx_to_send = 0;
           etimer_set(&periodic_send_timer, SEND_INTERVAL_UNICAST); // Start sending timer
-          leds_on(LEDS_LED1); // LED1 ON indicates sending active
+          leds_single_on(LEDS_LED1); // LED1 ON indicates sending active
         } else {
           LOG_INFO("Button 1: Sending already active.\n");
         }
@@ -157,7 +157,7 @@ PROCESS_THREAD(root_prr_process, ev, data)
           LOG_INFO("Button 2: STOPPING Unicast PRR Test.\n");
           is_sending_active = false;
           etimer_stop(&periodic_send_timer);
-          leds_off(LEDS_LED1); // LED1 OFF
+          leds_single_off(LEDS_LED1); // LED1 OFF
         } else {
           LOG_INFO("Button 2: Sending not active.\n");
         }
@@ -170,9 +170,9 @@ PROCESS_THREAD(root_prr_process, ev, data)
         } else {
           LOG_INFO("PRR Test COMPLETED: %u packets sent to each of %u children.\n", PACKETS_PER_CHILD, NUM_CHILDREN);
           is_sending_active = false;
-          leds_off(LEDS_LED1);
+          leds_single_off(LEDS_LED1);
           // Optional: Turn on another LED to signify completion, e.g., LEDS_LED2
-          leds_on(LEDS_LED2);
+          leds_single_on(LEDS_LED2);
         }
       }
     }
