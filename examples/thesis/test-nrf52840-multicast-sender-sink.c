@@ -6,7 +6,6 @@
 #include "contiki-lib.h"
 #include "contiki-net.h"
 #include "net/ipv6/multicast/uip-mcast6.h"
-#include "net/ipv6/uip-debug.h"
 #include "dev/button-hal.h"
 #include "dev/leds.h"
 
@@ -16,6 +15,7 @@
 #include <stdbool.h>
 
 #define DEBUG DEBUG_PRINT
+#include "net/ipv6/uip-debug.h"
 
 #define MCAST_UDP_PORT 3001       // Destination port for multicast packets
 #define SEND_INTERVAL (3 * CLOCK_SECOND)
@@ -100,7 +100,7 @@ PROCESS_THREAD(sink_sender_process, ev, data)
           mcast_seq_id = 0;
           perform_multicast_send();
           etimer_set(&mcast_send_timer, SEND_INTERVAL);
-          leds_on(LEDS_LED1);
+          leds_single_on(LEDS_LED1);
         } else {
           PRINTF("SINK_TX: Button 1 pressed - Already sending.\n");
         }
@@ -109,12 +109,12 @@ PROCESS_THREAD(sink_sender_process, ev, data)
           PRINTF("SINK_TX: Button 2 pressed - STOPPING multicast sending.\n");
           is_mcast_active = false;
           etimer_stop(&mcast_send_timer);
-          leds_off(LEDS_LED1);
+          leds_single_off(LEDS_LED1);
         } else {
           PRINTF("SINK_TX: Button 2 pressed - Already stopped.\n");
         }
       } else {
-         PRINTF("SINK_TX: Button ID %u (index %u) pressed.\n", btn->unique_id, btn->button);
+         PRINTF("SINK_TX: Button X \n");
       }
     } else if(ev == PROCESS_EVENT_TIMER && data == &mcast_send_timer) {
       if(is_mcast_active) {
@@ -125,7 +125,7 @@ PROCESS_THREAD(sink_sender_process, ev, data)
           PRINTF("SINK_TX: Reached %u MCAST iterations. Stopping sender.\n", MAX_MCAST_ITERATIONS);
           is_mcast_active = false;
           etimer_stop(&mcast_send_timer);
-          leds_off(LEDS_LED1);
+          leds_single_off(LEDS_LED1);
         }
       }
     }

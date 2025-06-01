@@ -51,7 +51,7 @@ include $(CONTIKI)/Makefile.identify-target
 include $(CONTIKI)/Makefile.dir-variables
 MODULES += $(CONTIKI_NG_NET_DIR)/ipv6/multicast
 
-# MAKE_MAC = MAKE_MAC_TSCH
+MAKE_MAC = MAKE_MAC_TSCH
 MAKE_ROUTING = MAKE_ROUTING_RPL_CLASSIC
 
 # ------------------------------------

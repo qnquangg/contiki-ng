@@ -8,7 +8,7 @@
 #include "net/routing/routing.h"
 #include "net/ipv6/multicast/uip-mcast6.h"
 #include "net/ipv6/uip-ds6.h"
-#include "net/ipv6/uip-debug.h"
+
 #include "net/ipv6/uipopt.h" // For UIP_TTL
 #include "net/ipv6/uip.h"      // Provides extern struct uip_udp_conn *uip_udp_conn;
 #include "dev/button-hal.h"
@@ -19,6 +19,7 @@
 #include <inttypes.h>
 
 #define DEBUG DEBUG_PRINT
+#include "net/ipv6/uip-debug.h"
 
 #define MCAST_UDP_PORT 3001
 #define UNICAST_ROOT_UDP_PORT 3002
@@ -139,7 +140,7 @@ PROCESS_THREAD(rpl_root_node_process, ev, data)
                total_mcast_received, last_mcast_ttl, hops);
         leds_toggle(LEDS_LED3);
       } else {
-        PRINTF("ROOT: Button ID %u (index %u) pressed.\n", btn->unique_id, btn->button);
+        PRINTF("ROOT: Button X \n");
       }
     }
   }

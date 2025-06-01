@@ -74,8 +74,15 @@
 
 /* Change this to switch engines. Engine codes in uip-mcast6-engines.h */
 #ifndef UIP_MCAST6_CONF_ENGINE
-#define UIP_MCAST6_CONF_ENGINE UIP_MCAST6_ENGINE_SMRF
+#define UIP_MCAST6_CONF_ENGINE UIP_MCAST6_ENGINE_ESMRF
 #endif
+
+// #define UIP_MCAST6_ENGINE_NONE        0 /**< Selecting this disables mcast */
+// #define UIP_MCAST6_ENGINE_SMRF        1 /**< The SMRF engine */
+// #define UIP_MCAST6_ENGINE_ROLL_TM     2 /**< The ROLL TM engine */
+// #define UIP_MCAST6_ENGINE_ESMRF       3 /**< The ESMRF engine */
+// #define UIP_MCAST6_ENGINE_MPL         4 /**< The MPL (RFC7731) engine */
+
 
 /* For Imin: Use 16 over CSMA, 64 over Contiki MAC */
 #define ROLL_TM_CONF_IMIN_1         64
