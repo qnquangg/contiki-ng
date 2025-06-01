@@ -1,12 +1,19 @@
 # CONTIKI_PROJECT = test-light-and-led
 # CONTIKI_PROJECT = test-border-router-tunslip-mqtt-client
-# CONTIKI_PROJECT = test-nrf52840-multicast-sender-root test-nrf52840-multicast-receiver-sink
 # CONTIKI_PROJECT = test-nrf52840-led-button
 # CONTIKI_PROJECT = test-nrf52840-mqtt-client
 
-# Test upward: Sink node send multicast packets to all (Receiver root, receiver sink, sender sink)
-CONTIKI_PROJECT = test-nrf52840-multicast-receiver-root test-nrf52840-multicast-receiver-sink test-nrf52840-multicast-sender-sink 
+# Test multicast downward
+# CONTIKI_PROJECT = test-nrf52840-multicast-sender-root test-nrf52840-multicast-receiver-sink
 
+# Test multicast upward: Sink node send multicast packets to all (Receiver root, receiver sink, sender sink)
+# CONTIKI_PROJECT = test-nrf52840-multicast-receiver-root test-nrf52840-multicast-receiver-sink test-nrf52840-multicast-sender-sink 
+
+# Test unicast downward
+CONTIKI_PROJECT = test-nrf52840-unicast-sender-root test-nrf52840-unicast-receiver-sink
+
+# Test unicast upward
+# CONTIKI_PROJECT = test-nrf52840-unicast-receiver-root test-nrf52840-unicast-receiver-sink test-nrf52840-unicast-sender-sink
 
 all: $(CONTIKI_PROJECT)
 
